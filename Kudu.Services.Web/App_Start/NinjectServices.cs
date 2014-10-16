@@ -8,6 +8,7 @@ using System.Net.Http.Formatting;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Routing;
 using Kudu.Contracts.Infrastructure;
 using Kudu.Contracts.Jobs;
@@ -305,12 +306,37 @@ namespace Kudu.Services.Web.App_Start
 
             RegisterRoutes(kernel, RouteTable.Routes);
 
+            // Enable Cors support
+            ConfigureCorsAttribute(GlobalConfiguration.Configuration, noContextDeploymentsSettingsManager, RouteTable.Routes);
+
             // Register the default hubs route: ~/signalr
             GlobalHost.DependencyResolver = new SignalRNinjectDependencyResolver(kernel);
             GlobalConfiguration.Configuration.Filters.Add(
                 new TraceDeprecatedActionAttribute(
                     kernel.Get<IAnalytics>(),
                     kernel.Get<ITraceFactory>()));
+        }
+
+        public static void ConfigureCorsAttribute(HttpConfiguration config, IDeploymentSettingsManager settings, RouteCollection routes)
+        {
+            // comma-separated list of origins
+            var origins = settings.GetCorsOrigins();
+            if (!String.IsNullOrEmpty(origins))
+            {
+                // allow kudu specific header in response
+                var exposedHeaders = String.Join(",", AutoSwapHandler.X_MS_SWAP_DEPLOYMENTID, AutoSwapHandler.X_MS_SWAP_OPERATIONID, AutoSwapHandler.X_MS_SWAP_SLOTNAME);
+                
+                var attrib = new EnableCorsAttribute(origins: origins, headers: "*", methods: "*", exposedHeaders: exposedHeaders);
+                
+                // turn off cookie
+                attrib.SupportsCredentials = true;
+
+                config.EnableCors(attrib);
+
+                // dummy not supported options route
+                // this is to work around Cors preflight OPTIONS request
+                routes.MapHttpRoute("cors-options", "{*path}", new { controller = "NotSupported", action = "NotSupported" }, new { verb = new HttpMethodConstraint("OPTIONS") });
+            }
         }
 
         public static class SignalRStartup

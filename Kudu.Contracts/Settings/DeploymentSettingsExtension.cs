@@ -190,5 +190,11 @@ namespace Kudu.Contracts.Settings
             string value = settings.GetValue(SettingsKeys.SiteExtensionsFeedUrl);
             return !String.IsNullOrEmpty(value) ? value : DefaultSiteExtensionFeedUrl;
         }
+
+        public static string GetCorsOrigins(this IDeploymentSettingsManager settings)
+        {
+            string value = settings.GetValue(SettingsKeys.AllowCorsOrigins);
+            return !String.IsNullOrEmpty(value) ? value : null;
+        }
     }
 }

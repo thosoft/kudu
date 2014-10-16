@@ -13,6 +13,9 @@ namespace Kudu.Core.Deployment
     public class AutoSwapHandler : IAutoSwapHandler
     {
         public const string AutoSwapLockFile = "autoswap.lock";
+        public const string X_MS_SWAP_OPERATIONID = "X-MS-SWAP-OPERATIONID";
+        public const string X_MS_SWAP_SLOTNAME = "X-MS-SWAP-SLOTNAME";
+        public const string X_MS_SWAP_DEPLOYMENTID = "X-MS-SWAP-DEPLOYMENTID";
 
         private readonly IDeploymentManager _deploymentManager;
         private readonly IDeploymentStatusManager _deploymentStatusManager;
@@ -88,9 +91,9 @@ namespace Kudu.Core.Deployment
 
             HttpResponse response = HttpContext.Current.Response;
 
-            response.Headers.Add("X-MS-SWAP-OPERATIONID", operationId);
-            response.Headers.Add("X-MS-SWAP-SLOTNAME", _autoSwapSlotName);
-            response.Headers.Add("X-MS-SWAP-DEPLOYMENTID", deploymentId);
+            response.Headers.Add(X_MS_SWAP_OPERATIONID, operationId);
+            response.Headers.Add(X_MS_SWAP_SLOTNAME, _autoSwapSlotName);
+            response.Headers.Add(X_MS_SWAP_DEPLOYMENTID, deploymentId);
 
             tracer.Trace("Requesting auto swap to slot name - '{0}', operation id - '{1}', deployment id - '{2}'".FormatInvariant(_autoSwapSlotName, operationId, deploymentId));
         }
