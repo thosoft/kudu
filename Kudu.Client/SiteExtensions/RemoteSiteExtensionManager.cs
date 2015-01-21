@@ -17,7 +17,7 @@ namespace Kudu.Client.SiteExtensions
         {
         }
 
-        public async Task<IEnumerable<SiteExtensionInfo>> GetRemoteExtensions(string filter = null, bool allowPrereleaseVersions = false)
+        public async Task<IEnumerable<SiteExtensionInfo>> GetRemoteExtensions(string filter = null, bool allowPrereleaseVersions = false, string feedUrl = null)
         {
             var url = new StringBuilder(ServiceUrl);
             url.Append("extensionfeed");
@@ -36,21 +36,39 @@ namespace Kudu.Client.SiteExtensions
                 url.Append(separator);
                 url.Append("allowPrereleaseVersions=");
                 url.Append(true);
+                separator = '&';
+            }
+
+            if (!string.IsNullOrWhiteSpace(feedUrl))
+            {
+                url.Append(separator);
+                url.Append("feedUrl=");
+                url.Append(feedUrl);
             }
 
             return await Client.GetJsonAsync<IEnumerable<SiteExtensionInfo>>(url.ToString());
         }
 
-        public async Task<SiteExtensionInfo> GetRemoteExtension(string id, string version = null)
+        public async Task<SiteExtensionInfo> GetRemoteExtension(string id, string version = null, string feedUrl = null)
         {
             var url = new StringBuilder(ServiceUrl);
             url.Append("extensionfeed/");
             url.Append(id);
 
+            var separator = '?';
             if (!String.IsNullOrEmpty(version))
             {
-                url.Append("?version=");
+                url.Append(separator);
+                url.Append("version=");
                 url.Append(version);
+                separator = '&';
+            }
+
+            if (!string.IsNullOrWhiteSpace(feedUrl))
+            {
+                url.Append(separator);
+                url.Append("feedUrl=");
+                url.Append(feedUrl);
             }
 
             return await Client.GetJsonAsync<SiteExtensionInfo>(url.ToString());
@@ -92,7 +110,7 @@ namespace Kudu.Client.SiteExtensions
                 url.Append("?checkLatest=");
                 url.Append(checkLatest);
             }
-            
+
             return await Client.GetJsonAsync<SiteExtensionInfo>(url.ToString());
         }
 
