@@ -31,5 +31,11 @@ namespace Kudu.Services.Web.Services
         {
             // No-op
         }
+
+        public object GetRequestScope(IContext context)
+        {
+            // No-op
+            return null;
+        }
     }
 }
