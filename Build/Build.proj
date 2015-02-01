@@ -117,8 +117,8 @@
           <IncludeBaseDirectory ParameterType="System.Boolean" Required="true" />
         </ParameterGroup>
         <Task>
-          <Reference Include="$(MSBuildToolsPath)\System.IO.Compression.dll"/>
-          <Reference Include="$(MSBuildToolsPath)\System.IO.Compression.FileSystem.dll"/>
+          <Reference Include="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.IO.Compression.dll"/>
+          <Reference Include="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.IO.Compression.FileSystem.dll"/>
           <Using Namespace="System.IO" />
           <Using Namespace="System.IO.Compression" />
           <Code Type="Fragment" Language="cs">
